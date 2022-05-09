@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+{% extends 'main.html' %}
+
+{%block content%}
+
+    
+    
+    {%for message in msg %}
+        
+        <p>{{message.body}}</p>
+    {%endfor%}
+
+
+{%endblock content%}
