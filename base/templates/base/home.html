@@ -1,21 +1,52 @@
 <!DOCTYPE html>
 {%extends 'main.html'%}
 
+
+
+
 {%block content%}
-<h1>this is home</h1>
-<div>
+<div class="home-container">
 
-    <a href="{% url 'create_room' %}">Create New Room</a>
-</div>
+   
+		<div>
+			<h3>BROWSE TOPICS</h3>
+			<hr>
+			<p><a href="{%url 'home'%}">ALL</a></p>
+			{%for t in topic %}
+				<p><a href="{%url 'home'%}?q={{t.name}}">{{t.name}}</a></p>
+				
+			{%endfor%}
 
-{%for room in rooms%}
+		</div>
 
-    <a href="{% url 'update-room' room.id %}">Edit</a>
-    <span>@{{room.host}}</span>
+		<div>
+			<div>
+				<h5>{{room_count}} Rooms available</h5>
+			</div>
+			<div>
+
+        		<a href="{% url 'create_room' %}">Create New Room</a>
+    		</div>
+
+
+    	{%for room in rooms%}
+			{%if request.user == room.host %}
+        		<a href="{% url 'update-room' room.id %}">Edit</a>
+        		<a href="{% url 'delete-room' room.id %}">Delete</a>
+			{%endif%}
+
     
-    <h1>{{room.id}}--<a href="{% url 'room' room.id%}">{{room.name}}</a></h1>
+        <span>@{{room.host}}</span>
+    
+        <h1>{{room.id}}--<a href="{% url 'room' room.id%}">{{room.name}}</a></h1>
 
-    <small>{{room.topic}}</small>
-    <hr>
-{%endfor%}
+        <small>{{room.topic}}</small>
+        <hr>
+
+    	{%endfor%}
+
+			
+		</div>
+
+</div>
 {%endblock content%} 

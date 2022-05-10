@@ -1,5 +1,36 @@
 <!DOCTYPE html>
-<a href="/">
-    <h1>LOGO</h1>
-</a>
+
+    <div>
+       <a href=""><h1>LOGO</h1></a> 
+
+    </div>
+
+    <div>
+
+        <form method="GET" action="{%url 'home'%}">
+
+            <input type="text" name="q" placeholder="Search Room...">
+
+        </form>
+
+    </div>
+
+    <div>
+        {%if request.user.is_authenticated %}
+            <a href="{%url 'logout' %}">logout</a>
+        {%else%}
+            <a href="{%url 'login' %}">Login</a>
+        {%endif%}
+
+    </div>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                {{message}}
+            {% endfor %}
+        </ul>
+{% endif %}
+
+
 <hr>
