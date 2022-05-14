@@ -1,0 +1,28 @@
+{%extends 'main.html'%}
+
+
+
+
+{%block content%}
+
+<div>
+   
+</div>
+<div class="profile-container">
+        <div>
+            {%include 'base/browse_topics.html' %}
+
+        </div>
+        <div>
+            <h2>@ {{user.username}}</h2>
+            {%include 'base/feed_content.html'%}
+
+        </div>
+            {%include 'base/activaty.html' %}
+        <div>
+
+        </div>
+
+    </div>
+
+{%endblock content%}

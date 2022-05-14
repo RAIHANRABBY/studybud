@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
 from django.db.models import Q
+# from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login,logout,authenticate
+from django.contrib.auth import login, logout, authenticate
 from .models import Messages, Room, Topic
-from .forms import RoomForm
+from .forms import RoomForm, UserRegister
 
 # Create your views here.
 
@@ -25,16 +26,46 @@ def homeView(request):
                                 )
 
     topic = Topic.objects.all()
-    room_count= rooms.count()
-    context = {"rooms": rooms, 'topic': topic,'room_count':room_count}
+    room_count = rooms.count()
+    msg = Messages.objects.filter(
+        Q(room__topic__name__icontains=q)).order_by('-create')[0:5]
+    context = {"rooms": rooms, 'topic': topic,
+               'room_count': room_count, 'msg': msg}
     return render(request, "base/home.html", context)
 
 
+# profile of the user
+
+def profileView(request, pk):
+    user = User.objects.get(id=pk)
+    #access the children from the parents model
+    room = user.room_set.all()
+    msg = user.messages_set.all()
+    topic = Topic.objects.all()
+    content = {'rooms': room, 'msg': msg, 'user': user, 'topic': topic}
+    return render(request, 'base/profile.html', content)
+
+
 def roomView(request, pk):
+    room = Room.objects.get(id=pk)
+    room_message = room.messages_set.all().order_by('create')
+    participants = room.participants.all()
+    # count of the number of perticipents of the room
+    participants_count = len(participants)
+    if request.method == 'POST':
 
-    context = {}
+        msg = Messages.objects.create(
+            user=request.user, room=room, body=request.POST.get('comment'))
+        # adding the participants that masseged on the room
+        room.participants.add(request.user)
+
+        return redirect('room', pk=room.id)
+
+    context = {'msg': room_message, 'room': room, 'participants': participants,
+               'p_count': participants_count
+
+               }
     return render(request, 'base/room.html', context)
-
 
 
 @login_required(login_url='login')
@@ -58,7 +89,7 @@ def updateRoomView(request, pk):
     room = Room.objects.get(id=pk)
     # create a form that has the instance of the room
     form = RoomForm(instance=room)
-    #redirecting the other user from using the updating option of a user
+    # redirecting the other user from using the updating option of a user
     if request.user != room.host:
         return redirect('home')
     if request.method == 'POST':
@@ -74,7 +105,7 @@ def updateRoomView(request, pk):
 # Delete the room
 def deleteRoomView(request, pk):
     room = Room.objects.get(id=pk)
-    #redirecting the other user from using the delete option of a user
+    # redirecting the other user from using the delete option of a user
     if request.user != room.host:
         return redirect('home')
     if request.method == 'POST':
@@ -85,43 +116,70 @@ def deleteRoomView(request, pk):
     return render(request, 'base/delete.html', context)
 
 
-
-
-
-
 def loginpage(request):
-
+    page = 'login'
 
     if request.user.is_authenticated:
         return redirect('home')
-
 
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
 
         try:
-            user=User.objects.get(username=username)
+            user = User.objects.get(username=username)
         except:
             messages.error(request, 'User does not exist.')
-        
-        user=authenticate(request,username=username,password=password)
+
+        user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            login(request,user)  
+            login(request, user)
             return redirect('home')
-
 
         else:
             messages.error(request, 'Wrong Username or password.')
 
-    
+    context = {'page': page}
 
-    context={}
-
-    return render(request,'base/login.html',context)
+    return render(request, 'base/login_register.html', context)
 
 
 def logoutpage(request):
     logout(request)
     return redirect('login')
+
+
+def registerpage(request):
+    form = UserRegister()
+    if request.method == 'POST':
+        form = UserRegister(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = user.username.lower()
+            user.save()
+            login(request, user)
+            messages.success(request, user.first_name +
+                             ' your account is created successfully.')
+            return redirect('home')
+        else:
+            form = UserRegister()
+            messages.error(
+                request, 'Error occurred. please enter details carefully.')
+
+    context = {'form': form}
+    return render(request, 'base/login_register.html', context)
+
+
+@login_required(login_url='home')
+def deleteMsg(request, pk):
+    msg = Messages.objects.get(id=pk)
+    # redirecting the other user from using the delete option of a user
+    if request.user != msg.user:
+        return redirect('home')
+    if request.method == 'POST':
+        msg.delete()
+        return redirect('home')
+
+    context = {'obj': msg}
+    return render(request, 'base/delete.html', context)

@@ -1,14 +1,81 @@
 <!DOCTYPE html>
 {% extends 'main.html' %}
 
+
 {%block content%}
 
+<div class="roomcontainer">
+
+
+    <div>
     
     
-    {%for message in msg %}
+    
+       
+        <div>
+            <h3>{{room.name}}</h3>
+            <hr>
+        </div>
+    
+        <h1>{{room.name}}</h1>
+        <button type="submit">JOIN</button>
         
-        <p>{{message.body}}</p>
-    {%endfor%}
+        <small>{{room.create | timesince}}</small>
+        <h6>HOSTED BY</h6>
+        <div>
+            <a href="">LOGO</a>
+            <a href=""><small>@{{room.host}}</small></a>
+    
+        </div>
+    
+        <p>NOTE: Room will only display 25 most recent messages while this website is still in beta.</p>
+        <div class="conversation_container">
+            {%for message in msg %}
+            <hr>
+            <small>@{{message.user}}  {{message.create| timesince}}</small>
+            <!-- if the user is logged in the edit option will be shown -->
+            {%if request.user == message.user%}
+            <p><a href="{%url 'delete_msg' message.id%}">Delete</a>  <a href="">Edit</a></p>
+            {%endif%}
+
+            <p>{{message.body}}</p>
+    
+            {%endfor%}
+            <hr>
+    
+            {%if request.user.is_authenticated%}
+            <div class="comment-box">
+                <form method="POST">
+                    {%csrf_token%}
+                    <input type="text" name="comment" placeholder="Enter your message...">
+    
+                </form>
+                
+            </div>
+            {%endif%}
+    
+        </div>
+        
+         
+    </div>
+
+    <div>
+        <h3>PARTICIPENT ({{p_count}})</h3>
+        {%for i in participants%}
+            <p><a href="">{{i}}</a></p>
+        {%endfor%}
+        
+
+
+
+    </div>
+</div>
+
+
+
+
+
+
 
 
 {%endblock content%}
