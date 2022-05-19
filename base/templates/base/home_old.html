@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+{%extends 'main.html'%}
+
+
+
+
+{%block content%}
+<div class="home-container">
+  
+
+	<div class="browse-section">
+		{%include 'base/browse_topics.html' %}
+
+	</div>
+  
+	<div class="room-section">
+
+
+
+		
+				
+		<div>
+			<h5>{{room_count}} Rooms available</h5>
+		</div>
+		<div>
+
+			<a href="{% url 'create_room' %}">Create New Room</a>
+		</div>
+
+			{%include 'base/feed_content.html'%}
+
+
+
+		</div>
+
+
+		<div class="activity-section">
+			{%include 'base/activaty.html'%}
+			
+
+		</div>
+	</div>
+{%endblock content%} 

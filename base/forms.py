@@ -9,9 +9,11 @@ class RoomForm(ModelForm):
     class Meta:
         model = Room
         fields = '__all__'
+        exclude = ['participants', 'host']
 
 
 class UserRegister(UserCreationForm):
     class Meta:
         model = User
-        fields = ['username', 'first_name','last_name','email','password1','password2']
+        fields = ['username', 'first_name', 'last_name',
+                  'email', 'password1', 'password2']

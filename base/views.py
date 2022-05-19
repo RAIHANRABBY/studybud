@@ -19,7 +19,7 @@ def homeView(request):
 # the ways the search option will work
     rooms = Room.objects.filter(Q(topic__name__icontains=q) |
                                 Q(name__icontains=q) |
-                                Q(describtion__icontains=q)
+                                Q(description__icontains=q)
 
 
 
@@ -27,10 +27,13 @@ def homeView(request):
 
     topic = Topic.objects.all()
     room_count = rooms.count()
+  
     msg = Messages.objects.filter(
         Q(room__topic__name__icontains=q)).order_by('-create')[0:5]
     context = {"rooms": rooms, 'topic': topic,
-               'room_count': room_count, 'msg': msg}
+               'room_count': room_count, 'msg': msg,
+            
+               }
     return render(request, "base/home.html", context)
 
 
@@ -38,7 +41,7 @@ def homeView(request):
 
 def profileView(request, pk):
     user = User.objects.get(id=pk)
-    #access the children from the parents model
+    # access the children from the parents model
     room = user.room_set.all()
     msg = user.messages_set.all()
     topic = Topic.objects.all()
@@ -72,12 +75,20 @@ def roomView(request, pk):
 def createRoomView(request):
 
     form = RoomForm()
+    topic=Topic.objects.all()
+
     if request.method == 'POST':
-        form = RoomForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-    context = {'form': form}
+        room_topic = request.POST.get('topic')
+        topic, created = Topic.objects.get_or_create(name=room_topic)
+        Room.objects.create(
+            host=request.user,
+            topic=topic,
+            name=request.POST.get('name'),
+            description=request.POST.get('description')
+
+        )
+        return redirect('home')
+    context = {'form': form,'topic': topic}
     return render(request, 'base/create_room.html', context)
 
 # update the room

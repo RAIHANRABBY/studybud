@@ -1,43 +1,24 @@
 <!DOCTYPE html>
 {%extends 'main.html'%}
+{%load static%}
 
+  {%block content%}
+    <main class="layout layout--3">
+      <div class="container">
+        <!-- Topics Start -->
+        {%include 'base/browse_topics.html'%}
+        <!-- Topics End -->
 
+        <!-- Room List Start -->
+        {%include 'base/feed_content.html'%}
 
+        <!-- Room List End -->
 
-{%block content%}
-<div class="home-container">
-  
+        <!-- Activities Start -->
+        {%include 'base/activity_content.html' %}
+        <!-- Activities End -->
+      </div>
+    </main>
+    <!-- <script src="script.js"></script> -->
+  {%endblock content%}
 
-	<div class="browse-section">
-		{%include 'base/browse_topics.html' %}
-
-	</div>
-  
-	<div class="room-section">
-
-
-
-		
-				
-		<div>
-			<h5>{{room_count}} Rooms available</h5>
-		</div>
-		<div>
-
-			<a href="{% url 'create_room' %}">Create New Room</a>
-		</div>
-
-			{%include 'base/feed_content.html'%}
-
-
-
-		</div>
-
-
-		<div class="activity-section">
-			{%include 'base/activaty.html'%}
-			
-
-		</div>
-	</div>
-{%endblock content%} 
