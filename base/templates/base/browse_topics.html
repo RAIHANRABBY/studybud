@@ -4,11 +4,11 @@
     <h2>Browse Topics</h2>
   </div>
   <ul class="topics__list">
-    <p><a href="{%url 'home'%}">ALL</a></p>
+    <li><a href="{%url 'home'%}">ALL <span>{{topic.count}}</span></a></li>
 
     {%for t in topic %}
     <li>
-      <a href="{%url 'home'%}?q={{t.name}}">{{t.name}} <span>90</span></a>
+      <a href="{%url 'home'%}?q={{t.name}}">{{t.name}} <span>{{t.room_set.all.count}}</span></a>
     </li>
 
     {%endfor%}

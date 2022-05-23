@@ -1,28 +1,48 @@
-{%extends 'main.html'%}
+{%extends 'main.html'%} {%block content%}
+<main class="profile-page layout layout--3">
+  <div class="container">
+    <!-- Topics Start -->
+    {%include 'base/browse_topics.html' %}
+    <!-- Topics End -->
 
-
-
-
-{%block content%}
-
-<div>
-   
-</div>
-<div class="profile-container">
-        <div>
-            {%include 'base/browse_topics.html' %}
-
+    <!-- Room List Start -->
+    <div class="roomList">
+      <div class="profile">
+        <div class="profile__avatar">
+          <div class="avatar avatar--large active">
+            <img src="{{user.profile.p_pic.url}}" />
+          </div>
         </div>
-        <div>
-            <h2>@ {{user.username}}</h2>
-            {%include 'base/feed_content.html'%}
-
+        <div class="profile__info">
+          <h3>{{user.first_name}} {{ user.last_name }} </h3>
+          <p>@{{user}}</p>
+          {% if request.user == user%}
+          <a href="{% url 'edit-profile' user.id %}" class="btn btn--main btn--pill"
+            >Edit Profile</a
+          >
+          {%endif%}
         </div>
-            {%include 'base/activaty.html' %}
-        <div>
-
+        <div class="profile__about">
+          <h3>About</h3>
+          <p>
+            {{user_profile.bio}}
+          </p>
         </div>
+      </div>
 
+      <div class="roomList__header">
+       
+      </div>
+      {% include 'base/feed_content.html' %}
     </div>
+    <!-- Room List End -->
+
+    <!-- Activities Start -->
+    {%include 'base/activity_content.html' %}
+    <!-- Activities End -->
+  </div>
+</main>
+
+
 
 {%endblock content%}

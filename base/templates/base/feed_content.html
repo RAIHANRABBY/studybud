@@ -25,9 +25,16 @@
   </div>
   <div class="roomList__header">
     <div>
+      {%if profile%}
+      <div>
+        <h2>Study Rooms Hosted by <a>{{user}} </a></h2>
+      </div>
+      {%else%}
       <h2>Study Room</h2>
       <p>{{room_count}} Rooms available</p>
+      {%endif%}
     </div>
+    {% if request.user.id == user.id%}
     <a class="btn btn--main" href="{% url 'create_room' %}">
       <svg
         version="1.1"
@@ -43,6 +50,7 @@
       </svg>
       Create Room
     </a>
+    {%endif%}
   </div>
   <!-- posts section -->
   {%for room in rooms%}
@@ -50,7 +58,7 @@
     <div class="roomListRoom__header">
       <a href="{% url 'profile' room.host.id %}" class="roomListRoom__author">
         <div class="avatar avatar--small">
-          <img src="https://randomuser.me/api/portraits/women/11.jpg" />
+          <img src="{{room.host.profile.p_pic.url}}" />
         </div>
         <span>@{{room.host}}</span>
       </a>

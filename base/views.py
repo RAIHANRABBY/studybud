@@ -5,8 +5,8 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
-from .models import Messages, Room, Topic
-from .forms import RoomForm, UserRegister
+from .models import Messages, Room, Topic,Profile
+from .forms import RoomForm, UserRegister,UserUpdate
 
 # Create your views here.
 
@@ -26,12 +26,14 @@ def homeView(request):
                                 )
 
     topic = Topic.objects.all()
+    
     room_count = rooms.count()
   
     msg = Messages.objects.filter(
         Q(room__topic__name__icontains=q)).order_by('-create')[0:5]
     context = {"rooms": rooms, 'topic': topic,
                'room_count': room_count, 'msg': msg,
+               
             
                }
     return render(request, "base/home.html", context)
@@ -45,8 +47,32 @@ def profileView(request, pk):
     room = user.room_set.all()
     msg = user.messages_set.all()
     topic = Topic.objects.all()
-    content = {'rooms': room, 'msg': msg, 'user': user, 'topic': topic}
+    profile=Profile.objects.get(user=user.id)
+
+    
+    room_count=len(room)
+    profile_status=True
+    content = {'rooms': room, 'msg': msg, 'user': user, 
+                'topic': topic,'room_count':room_count,
+                'profile':profile_status,'user_profile':profile}
     return render(request, 'base/profile.html', content)
+
+
+
+@login_required(login_url='login')
+def editProfile(request,pk):
+    user=User.objects.get(id=pk)
+   
+    form=UserUpdate(instance=user)
+    if request.user != user:
+        return redirect('home')
+    if request.method == 'POST':
+        form= UserUpdate(request.POST,instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile', pk= user.id)
+    context={'form':form}
+    return render(request,'base/edit-profile.html',context)
 
 
 def roomView(request, pk):
@@ -77,6 +103,7 @@ def createRoomView(request):
     form = RoomForm()
     topic=Topic.objects.all()
 
+    create_of_room=True
     if request.method == 'POST':
         room_topic = request.POST.get('topic')
         topic, created = Topic.objects.get_or_create(name=room_topic)
@@ -88,7 +115,7 @@ def createRoomView(request):
 
         )
         return redirect('home')
-    context = {'form': form,'topic': topic}
+    context = {'form': form,'topic': topic,'create':create_of_room}
     return render(request, 'base/create_room.html', context)
 
 # update the room
@@ -104,12 +131,16 @@ def updateRoomView(request, pk):
     if request.user != room.host:
         return redirect('home')
     if request.method == 'POST':
+        room_topic = request.POST.get('topic')
+        topic, created = Topic.objects.get_or_create(name=room_topic)
         # updating new data that has the same instance as room
-        form = RoomForm(request.POST, instance=room)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-    context = {'form': form}
+        room.name = request.POST.get('name')
+        room.topic=topic
+        room.description=request.POST.get('description')
+        room.save()
+        
+        return redirect('home')
+    context = {'form': form,'room':room}
     return render(request, 'base/create_room.html', context)
 
 

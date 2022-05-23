@@ -27,9 +27,9 @@
     <nav class="header__menu">
     {%if request.user.is_authenticated %}
       <div class="header__user">
-        <a href="profile.html">
+        <a href="{% url 'profile' request.user.id %}">
           <div class="avatar avatar--medium active">
-            <img src="https://randomuser.me/api/portraits/men/37.jpg" />
+            <img src="{{request.user.profile.p_pic.url}}" />
           </div>
           <p>{{request.user.username}} <span>@{{request.user}}</span></p>
         </a>

@@ -22,7 +22,8 @@ class Room(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
 
-    participants = models.ManyToManyField(User, related_name='participants',blank=True)
+    participants = models.ManyToManyField(
+        User, related_name='participants', blank=True)
 
     # time of update and delete the room
     update = models.DateTimeField(auto_now=True)
@@ -45,3 +46,12 @@ class Messages(models.Model):
 
     def __str__(self):
         return self.body[0:50]
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    p_pic = models.ImageField(upload_to='none',default='default.jpg')
+    bio = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.user.username}'
