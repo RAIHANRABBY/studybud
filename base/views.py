@@ -225,3 +225,18 @@ def deleteMsg(request, pk):
 
     context = {'obj': msg}
     return render(request, 'base/delete.html', context)
+
+
+
+def activityView(request):
+    q=request.GET.get('q') if request.GET.get('q') != None else ''
+    msg = Messages.objects.filter(
+        Q(room__topic__name__icontains=q)).order_by('-create')[0:5]
+    context = { 'msg': msg,
+               
+            
+               }
+    return render(request,'base/activity.html',context)
+
+def topicsView(request):
+    return render (request,'base/topics.html')

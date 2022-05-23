@@ -3,6 +3,8 @@ from .views import homeView, roomView, createRoomView, updateRoomView, deleteRoo
 from . import views
 urlpatterns = [
     path('home/', homeView, name='home'),
+    path('activity/', views.activityView, name='activity'),
+    path('topics/', views.topicsView, name='topics'),
     path('', homeView, name='home'),
     path('room/<str:pk>', roomView, name='room'),
     path('createroom/', createRoomView, name='create_room'),
